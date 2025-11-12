@@ -137,19 +137,33 @@ const EditorPage = () => {
     encodedParams.append("Program", code);
     encodedParams.append("Input", input);
 
+    // const options = {
+    //   method: "POST",
+    //   url: 'https://code-compiler.p.rapidapi.com/v2',
+    //   headers: {
+    //     // "content-type": "application/x-www-form-urlencoded",
+    //     // 'x-rapidapi-key': 'f86444e084mshd1621a807ddfd0dp107818jsn7d60d0b2d32a',
+    //     // 'x-rapidapi-host': 'judge029.p.rapidapi.com'
+    //     'x-rapidapi-key': process.env.REACT_APP_API_KEY,
+    //     'x-rapidapi-host': 'code-compiler.p.rapidapi.com',
+    //     'Content-Type': 'application/json'
+    //   },
+    //   data: encodedParams,
+    // };
+
     const options = {
-      method: "POST",
-      url: 'https://code-compiler.p.rapidapi.com/v2',
-      headers: {
-        // "content-type": "application/x-www-form-urlencoded",
-        // 'x-rapidapi-key': 'f86444e084mshd1621a807ddfd0dp107818jsn7d60d0b2d32a',
-        // 'x-rapidapi-host': 'judge029.p.rapidapi.com'
-        'x-rapidapi-key': process.env.REACT_APP_API_KEY,
-        'x-rapidapi-host': 'code-compiler.p.rapidapi.com',
-        'Content-Type': 'application/json'
-      },
-      data: encodedParams,
-    };
+  method: 'POST',
+  url: 'https://code-compiler.p.rapidapi.com/v2',
+  headers: {
+    'x-rapidapi-key': 'f86444e084mshd1621a807ddfd0dp107818jsn7d60d0b2d32a',
+    'x-rapidapi-host': 'code-compiler.p.rapidapi.com',
+    'Content-Type': 'application/json'
+  },
+  data: {
+    key1: 'value',
+    key2: 'value'
+  }
+};
 
     console.log(options);
 
