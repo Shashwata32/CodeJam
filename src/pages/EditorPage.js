@@ -194,19 +194,44 @@ const runCode = () => {
 
   toast.loading("Running Code....");
 
-  // Use the correct data structure for the API
+  // Map your language values to Piston API language names
+  const languageMap = {
+    '1': 'csharp',
+    '4': 'java',
+    '5': 'python',
+    '6': 'c',
+    '7': 'cpp',
+    '8': 'php',
+    '11': 'haskell',
+    '12': 'ruby',
+    '13': 'perl',
+    '17': 'javascript',
+    '20': 'go',
+    '21': 'scala',
+    '37': 'swift',
+    '38': 'bash',
+    '43': 'kotlin',
+    '60': 'typescript'
+  };
+
+  const languageName = languageMap[lang] || 'javascript';
+
   const requestData = {
-    LanguageChoice: lang,
-    Program: code,
-    Input: input
+    language: languageName,
+    version: "latest",
+    files: [
+      {
+        name: `main.${languageName}`,
+        content: code
+      }
+    ],
+    stdin: input
   };
 
   const options = {
     method: 'POST',
-    url: 'https://code-compiler.p.rapidapi.com/v2',
+    url: 'https://emkc.org/api/v2/piston/execute',
     headers: {
-      'x-rapidapi-key': process.env.REACT_APP_API_KEY || 'f86444e084mshd1621a807ddfd0dp107818jsn7d60d0b2d32a',
-      'x-rapidapi-host': 'code-compiler.p.rapidapi.com',
       'Content-Type': 'application/json'
     },
     data: requestData
@@ -218,10 +243,9 @@ const runCode = () => {
     .request(options)
     .then(function (response) {
       console.log("API Response:", response.data);
-      let message = response.data.Result;
-      if (message === null) {
-        message = response.data.Errors;
-      }
+      const result = response.data.run;
+      let message = result.output || result.stderr;
+      
       outputClicked();
       document.getElementById("input").value = message;
       toast.dismiss();
@@ -232,8 +256,7 @@ const runCode = () => {
       toast.dismiss();
       toast.error("Code compilation unsuccessful");
       document.getElementById("input").value =
-        "Something went wrong, Please check your code and input. Error: " + 
-        (error.response ? error.response.data : error.message);
+        "Something went wrong, Please check your code and input.";
     });
 };
 
