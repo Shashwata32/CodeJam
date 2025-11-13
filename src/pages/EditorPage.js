@@ -194,39 +194,41 @@ const runCode = () => {
 
   toast.loading("Running Code....");
 
-  // Map your language values to Piston API language names
+  // Enhanced language mapping with proper versions
   const languageMap = {
-    '1': 'csharp',
-    '4': 'java',
-    '5': 'python',
-    '6': 'c',
-    '7': 'cpp',
-    '8': 'php',
-    '11': 'haskell',
-    '12': 'ruby',
-    '13': 'perl',
-    '17': 'javascript',
-    '20': 'go',
-    '21': 'scala',
-    '37': 'swift',
-    '38': 'bash',
-    '43': 'kotlin',
-    '60': 'typescript'
+    '1': { language: 'csharp', version: '6.12.0', filename: 'main.cs' },
+    '4': { language: 'java', version: '15.0.2', filename: 'Main.java' },
+    '5': { language: 'python', version: '3.10.0', filename: 'main.py' },
+    '6': { language: 'c', version: '10.2.0', filename: 'main.c' },
+    '7': { language: 'cpp', version: '10.2.0', filename: 'main.cpp' },
+    '8': { language: 'php', version: '8.2.3', filename: 'main.php' },
+    '11': { language: 'haskell', version: '9.2.0', filename: 'main.hs' },
+    '12': { language: 'ruby', version: '3.0.1', filename: 'main.rb' },
+    '13': { language: 'perl', version: '5.34.0', filename: 'main.pl' },
+    '17': { language: 'javascript', version: '18.15.0', filename: 'main.js' },
+    '20': { language: 'go', version: '1.16.2', filename: 'main.go' },
+    '21': { language: 'scala', version: '3.2.2', filename: 'main.scala' },
+    '37': { language: 'swift', version: '5.3.3', filename: 'main.swift' },
+    '38': { language: 'bash', version: '5.2.0', filename: 'main.sh' },
+    '43': { language: 'kotlin', version: '1.9.0', filename: 'main.kt' },
+    '60': { language: 'typescript', version: '5.0.3', filename: 'main.ts' }
   };
 
-  const languageName = languageMap[lang] || 'javascript';
+  const langConfig = languageMap[lang] || languageMap['17']; // Default to JavaScript
 
   const requestData = {
-    language: languageName,
-    version: "latest",
+    language: langConfig.language,
+    version: langConfig.version,
     files: [
       {
-        name: `main.${languageName}`,
+        name: langConfig.filename,
         content: code
       }
     ],
     stdin: input
   };
+
+  console.log("API Request Data:", requestData);
 
   const options = {
     method: 'POST',
@@ -237,26 +239,39 @@ const runCode = () => {
     data: requestData
   };
 
-  console.log("API Request:", options);
-
   axios
     .request(options)
     .then(function (response) {
       console.log("API Response:", response.data);
       const result = response.data.run;
-      let message = result.output || result.stderr;
+      let message = '';
+      
+      if (result.output) {
+        message = result.output;
+      } else if (result.stderr) {
+        message = `Error: ${result.stderr}`;
+      } else {
+        message = 'No output received';
+      }
       
       outputClicked();
       document.getElementById("input").value = message;
       toast.dismiss();
-      toast.success("Code compilation complete");
+      toast.success("Code execution complete");
     })
     .catch(function (error) {
       console.error("API Error:", error);
       toast.dismiss();
-      toast.error("Code compilation unsuccessful");
-      document.getElementById("input").value =
-        "Something went wrong, Please check your code and input.";
+      
+      let errorMessage = "Something went wrong. Please check your code and input.";
+      if (error.response) {
+        errorMessage = `API Error: ${error.response.status} - ${error.response.data.message || 'Bad Request'}`;
+      } else if (error.request) {
+        errorMessage = "Network error: Unable to reach the code execution service.";
+      }
+      
+      toast.error("Code execution failed");
+      document.getElementById("input").value = errorMessage;
     });
 };
 
