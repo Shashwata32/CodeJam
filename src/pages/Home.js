@@ -38,11 +38,7 @@ const Home = () => {
 return (
   <div className="homePageWrapper">
     <div className="formWrapper">
-      <img
-        className="homePageLogo"
-        src="/code-sync.png"
-        alt="code-sync-logo"
-      />
+      <h2 className="mainLabel">Code Sync</h2>
       <h4 className="mainLabel">Start Coding Together</h4>
       <div className="inputGroup">
         <input
