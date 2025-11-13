@@ -125,67 +125,117 @@ const EditorPage = () => {
     outputLabel.classList.add("clickedLabel");
   };
 
-  const runCode = () => {
-    const lang = document.getElementById("languageOptions").value;
-    const input = document.getElementById("input").value;
-    const code = codeRef.current;
+//   const runCode = () => {
+//     const lang = document.getElementById("languageOptions").value;
+//     const input = document.getElementById("input").value;
+//     const code = codeRef.current;
 
-    toast.loading("Running Code....");
+//     toast.loading("Running Code....");
 
-    const encodedParams = new URLSearchParams();
-    encodedParams.append("LanguageChoice", lang);
-    encodedParams.append("Program", code);
-    encodedParams.append("Input", input);
+//     const encodedParams = new URLSearchParams();
+//     encodedParams.append("LanguageChoice", lang);
+//     encodedParams.append("Program", code);
+//     encodedParams.append("Input", input);
 
-    // const options = {
-    //   method: "POST",
-    //   url: 'https://code-compiler.p.rapidapi.com/v2',
-    //   headers: {
-    //     // "content-type": "application/x-www-form-urlencoded",
-    //     // 'x-rapidapi-key': 'f86444e084mshd1621a807ddfd0dp107818jsn7d60d0b2d32a',
-    //     // 'x-rapidapi-host': 'judge029.p.rapidapi.com'
-    //     'x-rapidapi-key': process.env.REACT_APP_API_KEY,
-    //     'x-rapidapi-host': 'code-compiler.p.rapidapi.com',
-    //     'Content-Type': 'application/json'
-    //   },
-    //   data: encodedParams,
-    // };
+//     // const options = {
+//     //   method: "POST",
+//     //   url: 'https://code-compiler.p.rapidapi.com/v2',
+//     //   headers: {
+//     //     // "content-type": "application/x-www-form-urlencoded",
+//     //     // 'x-rapidapi-key': 'f86444e084mshd1621a807ddfd0dp107818jsn7d60d0b2d32a',
+//     //     // 'x-rapidapi-host': 'judge029.p.rapidapi.com'
+//     //     'x-rapidapi-key': process.env.REACT_APP_API_KEY,
+//     //     'x-rapidapi-host': 'code-compiler.p.rapidapi.com',
+//     //     'Content-Type': 'application/json'
+//     //   },
+//     //   data: encodedParams,
+//     // };
 
-    const options = {
-  method: 'POST',
-  url: 'https://code-compiler.p.rapidapi.com/v2',
-  headers: {
-    'x-rapidapi-key': 'f86444e084mshd1621a807ddfd0dp107818jsn7d60d0b2d32a',
-    'x-rapidapi-host': 'code-compiler.p.rapidapi.com',
-    'Content-Type': 'application/json'
-  },
-  data: {
-    key1: 'value',
-    key2: 'value'
-  }
-};
+//     const options = {
+//   method: 'POST',
+//   url: 'https://code-compiler.p.rapidapi.com/v2',
+//   headers: {
+//     'x-rapidapi-key': 'f86444e084mshd1621a807ddfd0dp107818jsn7d60d0b2d32a',
+//     'x-rapidapi-host': 'code-compiler.p.rapidapi.com',
+//     'Content-Type': 'application/json'
+//   },
+//   data: {
+//     key1: 'value',
+//     key2: 'value'
+//   }
+// };
 
-    console.log(options);
+//     console.log(options);
 
-    axios
-      .request(options)
-      .then(function (response) {
-        let message = response.data.Result;
-        if (message === null) {
-          message = response.data.Errors;
-        }
-        outputClicked();
-        document.getElementById("input").value = message;
-        toast.dismiss();
-        toast.success("Code compilation complete");
-      })
-      .catch(function (error) {
-        toast.dismiss();
-        toast.error("Code compilation unsuccessful");
-        document.getElementById("input").value =
-          "Something went wrong, Please check your code and input.";
-      });
+//     axios
+//       .request(options)
+//       .then(function (response) {
+//         let message = response.data.Result;
+//         if (message === null) {
+//           message = response.data.Errors;
+//         }
+//         outputClicked();
+//         document.getElementById("input").value = message;
+//         toast.dismiss();
+//         toast.success("Code compilation complete");
+//       })
+//       .catch(function (error) {
+//         toast.dismiss();
+//         toast.error("Code compilation unsuccessful");
+//         document.getElementById("input").value =
+//           "Something went wrong, Please check your code and input.";
+//       });
+//   };
+
+const runCode = () => {
+  const lang = document.getElementById("languageOptions").value;
+  const input = document.getElementById("input").value;
+  const code = codeRef.current;
+
+  toast.loading("Running Code....");
+
+  // Use the correct data structure for the API
+  const requestData = {
+    LanguageChoice: lang,
+    Program: code,
+    Input: input
   };
+
+  const options = {
+    method: 'POST',
+    url: 'https://code-compiler.p.rapidapi.com/v2',
+    headers: {
+      'x-rapidapi-key': process.env.REACT_APP_API_KEY || 'f86444e084mshd1621a807ddfd0dp107818jsn7d60d0b2d32a',
+      'x-rapidapi-host': 'code-compiler.p.rapidapi.com',
+      'Content-Type': 'application/json'
+    },
+    data: requestData
+  };
+
+  console.log("API Request:", options);
+
+  axios
+    .request(options)
+    .then(function (response) {
+      console.log("API Response:", response.data);
+      let message = response.data.Result;
+      if (message === null) {
+        message = response.data.Errors;
+      }
+      outputClicked();
+      document.getElementById("input").value = message;
+      toast.dismiss();
+      toast.success("Code compilation complete");
+    })
+    .catch(function (error) {
+      console.error("API Error:", error);
+      toast.dismiss();
+      toast.error("Code compilation unsuccessful");
+      document.getElementById("input").value =
+        "Something went wrong, Please check your code and input. Error: " + 
+        (error.response ? error.response.data : error.message);
+    });
+};
 
   const sendMessage = () => {
     if (document.getElementById("inputBox").value === "") return;
