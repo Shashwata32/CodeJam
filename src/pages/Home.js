@@ -38,7 +38,7 @@ const Home = () => {
 return (
   <div className="homePageWrapper">
     <div className="formWrapper">
-      <h2 className="mainLabel">Code Sync</h2>
+      <h1 className="mainLabel">Code Sync</h1>
       <h4 className="mainLabel">Start Coding Together</h4>
       <div className="inputGroup">
         <input
