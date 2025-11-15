@@ -463,6 +463,10 @@ body {
   background-clip: text;
 }
 
+h1 {
+  font-size: 2.5rem;
+}
+
 .inputGroup {
   display: flex;
   flex-direction: column;
